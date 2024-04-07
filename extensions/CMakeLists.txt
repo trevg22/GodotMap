@@ -27,7 +27,7 @@ if ( APPLE )
 endif()
 
 # Main project information
-project( GDExtensionTemplate
+project( extensions
     LANGUAGES
         CXX
     VERSION
@@ -131,6 +131,8 @@ set( GODOT_CPP_SYSTEM_HEADERS ON CACHE BOOL "" FORCE )
 
 add_subdirectory( extern/godot-cpp )
 
+add_subdirectory(extern/boost/polygons)
+
 set_target_properties( godot-cpp
     PROPERTIES
         CXX_VISIBILITY_PRESET hidden    # visibility needs to be the same as the main library
@@ -139,4 +141,5 @@ set_target_properties( godot-cpp
 target_link_libraries( ${PROJECT_NAME}
     PRIVATE
         godot-cpp
+        boost_polygon
 )
