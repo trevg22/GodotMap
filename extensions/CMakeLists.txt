@@ -139,7 +139,9 @@ set_target_properties( godot-cpp
 )
 
 target_link_libraries( ${PROJECT_NAME}
-    PRIVATE
+    PUBLIC
         godot-cpp
         boost_polygon
 )
+add_executable(test src/test.cpp)
+target_link_libraries(test PUBLIC ${PROJECT_NAME})

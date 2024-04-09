@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Unlicense
 
 target_sources( ${PROJECT_NAME}
-    PRIVATE
+    PUBLIC
         Example.h
         Example.cpp
         GDExtensionTemplate.h
@@ -12,6 +12,6 @@ target_sources( ${PROJECT_NAME}
 )
 
 target_include_directories( ${PROJECT_NAME}
-    PRIVATE
+    PUBLIC
         "src"
 )
