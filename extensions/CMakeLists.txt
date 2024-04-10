@@ -143,5 +143,7 @@ target_link_libraries( ${PROJECT_NAME}
         godot-cpp
         boost_polygon
 )
+
+find_package(Qt5 COMPONENTS Gui OpenGL REQUIRED)
 add_executable(test src/test.cpp)
-target_link_libraries(test PUBLIC ${PROJECT_NAME})
+target_link_libraries(test PUBLIC ${PROJECT_NAME} Qt5::Gui Qt5::OpenGL)

@@ -1,4 +1,5 @@
 #include "Voronoi.hpp"
+#include "boost/polygon/voronoi_diagram.hpp"
 #include <boost/polygon/voronoi.hpp>
 #include <godot_cpp/classes/polygon2d.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -19,10 +20,9 @@ void Vor::compute()
     // godot::PackedVector2Array poly_vertices;
     // godot::Array arr;
     //  godot::TypedArray<godot::Polygon2D> polygons;
-    boost::polygon::voronoi_diagram<double> vd;
-    boost::polygon::construct_voronoi( vertices_.begin(), vertices_.end(), &vd );
-    for ( boost::polygon::voronoi_diagram<double>::const_cell_iterator it = vd.cells().begin();
-          it != vd.cells().end(); ++it )
+    boost::polygon::construct_voronoi( vertices_.begin(), vertices_.end(), &vd_ );
+    for ( boost::polygon::voronoi_diagram<double>::const_cell_iterator it = vd_.cells().begin();
+          it != vd_.cells().end(); ++it )
     {
         const boost::polygon::voronoi_diagram<double>::cell_type &cell = *it;
         const boost::polygon::voronoi_diagram<double>::edge_type *edge = cell.incident_edge();
@@ -46,14 +46,62 @@ void Vor::compute()
         //  polygons_.push_back( poly_vertices );
     }
 }
-// godot::Array ::getPolygons()
-// {
-//     return polygons_;
-// }
 
-// void Voronoi::_bind_methods()
-// {
-//     godot::ClassDB::bind_method( godot::D_METHOD( "addVertex" ), &Vor::addVertex );
-//     godot::ClassDB::bind_method( godot::D_METHOD( "compute" ), &Vor::compute );
-//     godot::ClassDB::bind_method( godot::D_METHOD( "getPolygons" ), &Voronoi::getPolygons );
-// }
+std::vector<boost::polygon::voronoi_cell<double>> Vor::getCells()
+{
+    return std::vector<boost::polygon::voronoi_cell<double>>( vd_.cells().begin(),
+                                                              vd_.cells().end() );
+}
+
+void Voronoi::addVertex( const godot::Vector2 &vertex )
+{
+    vor.addVertex( { vertex.x, vertex.y } );
+}
+
+void Voronoi::compute()
+{
+    vor.compute();
+}
+
+godot::Array Voronoi::getPolygons()
+{
+    godot::UtilityFunctions::print( "Starting get polygons" );
+    godot::Array polygons;
+
+    for ( boost::polygon::voronoi_diagram<double>::const_cell_iterator it = vor.vd_.cells().begin();
+          it != vor.vd_.cells().end(); ++it )
+    {
+        const boost::polygon::voronoi_diagram<double>::cell_type &cell = *it;
+        const boost::polygon::voronoi_diagram<double>::edge_type *edge = cell.incident_edge();
+        godot::PackedVector2Array vertices;
+        // This is convenient way to iterate edges around Voronoi cell.
+        do
+        {
+            if ( edge->is_primary() )
+            {
+
+                if ( edge->is_finite() )
+                {
+                    godot::UtilityFunctions::print( edge->vertex0()->x() );
+                    godot::UtilityFunctions::print( edge->vertex0()->y() );
+                     godot::Vector2 vertex;
+                     vertex.x=edge->vertex0()->x();
+                     vertex.y=edge->vertex0()->y();
+                     vertices.push_back( vertex );
+                }
+            edge = edge->next();
+            }
+        } while ( edge != cell.incident_edge() );
+        polygons.push_back( vertices );
+        vertices.clear();
+    }
+    godot::UtilityFunctions::print( "End before return of get polygons" );
+    return polygons;
+}
+
+void Voronoi::_bind_methods()
+{
+    godot::ClassDB::bind_method( godot::D_METHOD( "addVertex" ), &Voronoi::addVertex );
+    godot::ClassDB::bind_method( godot::D_METHOD( "compute" ), &Voronoi::compute );
+    godot::ClassDB::bind_method( godot::D_METHOD( "getPolygons" ), &Voronoi::getPolygons );
+}
