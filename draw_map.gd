@@ -1,8 +1,18 @@
 extends Node2D
 
 
+var db:SQLite
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	var points2=[]
+	db=SQLite.new()
+	db.path="res://network.db"
+	db.open_db()
+	var query_cmd="SELECT * FROM Network"
+	var db_data=db.select_rows("Network","",["*"])
+	print(db_data)
+	for row in db_data:
+		points2.append(Vector2(row["Lat"],row["Lon"]))
 	var points=[Vector2(40, 40),
 								  Vector2(40, 50),
 								  Vector2(50, 50),
@@ -14,7 +24,7 @@ func _ready():
 								]
 	var vor=Voronoi.new()
 	
-	for coord in points:
+	for coord in points2:
 		vor.addVertex(coord)
 		
 	

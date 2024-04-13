@@ -15,12 +15,6 @@ class Vor
 {
 
 public:
-    void addVertex( const boost::polygon::point_data<double> &vertex );
-    void compute();
-    std::vector<boost::polygon::voronoi_cell<double>> getCells();
-    // todo
-
-private:
     typedef double coordinate_type;
     typedef boost::polygon::point_data<coordinate_type> point_type;
     typedef boost::polygon::segment_data<coordinate_type> segment_type;
@@ -38,12 +32,18 @@ private:
     typedef VD::const_vertex_iterator const_vertex_iterator;
     typedef VD::const_edge_iterator const_edge_iterator;
 
+    void addVertex( const boost::polygon::point_data<double> &vertex );
+    void compute();
+    std::vector<boost::polygon::voronoi_cell<double>> getCells();
+    VD vd_;
+    // todo
+
+private:
     point_type shift_;
     std::vector<point_type> point_data_;
     std::vector<segment_type> segment_data_;
     rect_type brect_;
     VB vb_;
-    VD vd_;
 };
 class Voronoi : public godot::Object
 {
